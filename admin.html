@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NFC CARD Admin</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 25px 15px;
+    font-family: Arial, sans-serif;
+    background: #080808;
+    color: white;
+}
+
+.container {
+    max-width: 500px;
+    margin: auto;
+}
+
+h1 {
+    text-align: center;
+    color: #d4af37;
+    margin-bottom: 8px;
+}
+
+.subtitle {
+    text-align: center;
+    color: #888;
+    margin-bottom: 30px;
+}
+
+label {
+    display: block;
+    margin-top: 18px;
+    margin-bottom: 7px;
+    color: #d4af37;
+}
+
+input {
+    width: 100%;
+    padding: 14px;
+    border-radius: 10px;
+    border: 1px solid #444;
+    background: #151515;
+    color: white;
+    font-size: 15px;
+}
+
+button {
+    width: 100%;
+    margin-top: 25px;
+    padding: 16px;
+    border: none;
+    border-radius: 10px;
+    background: #d4af37;
+    color: #000;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.note {
+    margin-top: 25px;
+    padding: 15px;
+    background: #111;
+    border: 1px solid #333;
+    border-radius: 10px;
+    color: #aaa;
+    font-size: 13px;
+    line-height: 1.5;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>NFC CARD ADMIN</h1>
+
+    <p class="subtitle">
+        Manage your digital business card
+    </p>
+
+    <label>Name</label>
+    <input id="name" placeholder="Your name">
+
+    <label>Subtitle</label>
+    <input id="subtitle" placeholder="Connect with me">
+
+    <label>Facebook Link</label>
+    <input id="facebook" placeholder="https://facebook.com/...">
+
+    <label>Instagram Link</label>
+    <input id="instagram" placeholder="https://instagram.com/...">
+
+    <label>TikTok Link</label>
+    <input id="tiktok" placeholder="https://tiktok.com/@...">
+
+    <label>Messenger Link</label>
+    <input id="messenger" placeholder="https://m.me/...">
+
+    <label>Phone Number</label>
+    <input id="phone" placeholder="+63...">
+
+    <button onclick="saveData()">
+        SAVE CHANGES
+    </button>
+
+    <div class="note">
+        Note: This dashboard will prepare the information
+        for your NFC digital card.
+    </div>
+
+</div>
+
+<script>
+
+fetch("data.json")
+.then(response => response.json())
+.then(data => {
+
+    document.getElementById("name").value = data.name || "";
+    document.getElementById("subtitle").value = data.subtitle || "";
+    document.getElementById("facebook").value = data.facebook || "";
+    document.getElementById("instagram").value = data.instagram || "";
+    document.getElementById("tiktok").value = data.tiktok || "";
+    document.getElementById("messenger").value = data.messenger || "";
+    document.getElementById("phone").value = data.phone || "";
+
+});
+
+function saveData() {
+
+    alert(
+        "Dashboard interface is working. " +
+        "Automatic GitHub saving will be connected next."
+    );
+
+}
+
+</script>
+
+</body>
+</html>
