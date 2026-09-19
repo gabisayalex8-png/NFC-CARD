@@ -64,13 +64,23 @@ button {
     font-weight: bold;
 }
 
-.note {
-    margin-top: 25px;
+.status {
+    margin-top: 20px;
     padding: 15px;
+    border-radius: 10px;
     background: #111;
     border: 1px solid #333;
-    border-radius: 10px;
     color: #aaa;
+    line-height: 1.5;
+}
+
+.warning {
+    margin-top: 25px;
+    padding: 15px;
+    background: #17120a;
+    border: 1px solid #66521c;
+    border-radius: 10px;
+    color: #c9b77a;
     font-size: 13px;
     line-height: 1.5;
 }
@@ -81,66 +91,258 @@ button {
 
 <div class="container">
 
-    <h1>NFC CARD ADMIN</h1>
+<h1>NFC CARD ADMIN</h1>
 
-    <p class="subtitle">
-        Manage your digital business card
-    </p>
+<p class="subtitle">
+Manage your digital business card
+</p>
 
-    <label>Name</label>
-    <input id="name" placeholder="Your name">
+<label>GitHub Token</label>
+<input
+    id="token"
+    type="password"
+    placeholder="Paste your GitHub token here"
+    autocomplete="off">
 
-    <label>Subtitle</label>
-    <input id="subtitle" placeholder="Connect with me">
+<label>Name</label>
+<input id="name" placeholder="Your name">
 
-    <label>Facebook Link</label>
-    <input id="facebook" placeholder="https://facebook.com/...">
+<label>Subtitle</label>
+<input id="subtitle" placeholder="Connect with me">
 
-    <label>Instagram Link</label>
-    <input id="instagram" placeholder="https://instagram.com/...">
+<label>Facebook Link</label>
+<input id="facebook" placeholder="https://facebook.com/...">
 
-    <label>TikTok Link</label>
-    <input id="tiktok" placeholder="https://tiktok.com/@...">
+<label>Instagram Link</label>
+<input id="instagram" placeholder="https://instagram.com/...">
 
-    <label>Messenger Link</label>
-    <input id="messenger" placeholder="https://m.me/...">
+<label>TikTok Link</label>
+<input id="tiktok" placeholder="https://tiktok.com/@...">
 
-    <label>Phone Number</label>
-    <input id="phone" placeholder="+63...">
+<label>Messenger Link</label>
+<input id="messenger" placeholder="https://m.me/...">
 
-    <button onclick="saveData()">
-        SAVE CHANGES
-    </button>
+<label>Phone Number</label>
+<input id="phone" placeholder="+63...">
 
-    <div class="note">
-        Note: This dashboard will prepare the information
-        for your NFC digital card.
-    </div>
+<button onclick="saveData()">
+SAVE CHANGES
+</button>
+
+<div id="status" class="status">
+Loading current card information...
+</div>
+
+<div class="warning">
+<strong>Security:</strong><br>
+Your GitHub token is used only when you press SAVE CHANGES.
+It is not saved into this webpage.
+Do not share your token with anyone.
+</div>
 
 </div>
 
 <script>
 
+const username = "gabisayalex8-png";
+const repository = "NFC-CARD";
+const filePath = "data.json";
+const branch = "main";
+
+let currentSHA = "";
+
+
+// LOAD CURRENT DATA
 fetch("data.json")
 .then(response => response.json())
 .then(data => {
 
-    document.getElementById("name").value = data.name || "";
-    document.getElementById("subtitle").value = data.subtitle || "";
-    document.getElementById("facebook").value = data.facebook || "";
-    document.getElementById("instagram").value = data.instagram || "";
-    document.getElementById("tiktok").value = data.tiktok || "";
-    document.getElementById("messenger").value = data.messenger || "";
-    document.getElementById("phone").value = data.phone || "";
+    document.getElementById("name").value =
+        data.name || "";
+
+    document.getElementById("subtitle").value =
+        data.subtitle || "";
+
+    document.getElementById("facebook").value =
+        data.facebook || "";
+
+    document.getElementById("instagram").value =
+        data.instagram || "";
+
+    document.getElementById("tiktok").value =
+        data.tiktok || "";
+
+    document.getElementById("messenger").value =
+        data.messenger || "";
+
+    document.getElementById("phone").value =
+        data.phone || "";
+
+    document.getElementById("status").innerText =
+        "Current card information loaded.";
+
+})
+.catch(error => {
+
+    document.getElementById("status").innerText =
+        "Could not load current card information.";
 
 });
 
-function saveData() {
 
-    alert(
-        "Dashboard interface is working. " +
-        "Automatic GitHub saving will be connected next."
-    );
+// SAVE DATA TO GITHUB
+async function saveData() {
+
+    const token =
+        document.getElementById("token").value.trim();
+
+    if (!token) {
+
+        alert("Please enter your GitHub token.");
+
+        return;
+    }
+
+
+    const newData = {
+
+        name:
+            document.getElementById("name").value.trim(),
+
+        subtitle:
+            document.getElementById("subtitle").value.trim(),
+
+        facebook:
+            document.getElementById("facebook").value.trim(),
+
+        instagram:
+            document.getElementById("instagram").value.trim(),
+
+        tiktok:
+            document.getElementById("tiktok").value.trim(),
+
+        messenger:
+            document.getElementById("messenger").value.trim(),
+
+        phone:
+            document.getElementById("phone").value.trim()
+
+    };
+
+
+    const encodedData =
+        btoa(
+            unescape(
+                encodeURIComponent(
+                    JSON.stringify(newData, null, 2)
+                )
+            )
+        );
+
+
+    document.getElementById("status").innerText =
+        "Saving changes to GitHub...";
+
+
+    try {
+
+        // GET CURRENT FILE
+        const getResponse = await fetch(
+            `https://api.github.com/repos/${username}/${repository}/contents/${filePath}?ref=${branch}`,
+            {
+                headers: {
+                    "Authorization": `Bearer ${token}`,
+                    "Accept": "application/vnd.github+json"
+                }
+            }
+        );
+
+
+        if (!getResponse.ok) {
+
+            throw new Error(
+                "GitHub authentication failed."
+            );
+
+        }
+
+
+        const fileInfo =
+            await getResponse.json();
+
+        currentSHA =
+            fileInfo.sha;
+
+
+        // UPDATE FILE
+        const updateResponse = await fetch(
+            `https://api.github.com/repos/${username}/${repository}/contents/${filePath}`,
+            {
+                method: "PUT",
+
+                headers: {
+                    "Authorization": `Bearer ${token}`,
+                    "Accept": "application/vnd.github+json",
+                    "Content-Type": "application/json"
+                },
+
+                body: JSON.stringify({
+
+                    message:
+                        "Update NFC card information",
+
+                    content:
+                        encodedData,
+
+                    sha:
+                        currentSHA,
+
+                    branch:
+                        branch
+
+                })
+            }
+        );
+
+
+        if (!updateResponse.ok) {
+
+            const errorData =
+                await updateResponse.json();
+
+            throw new Error(
+                errorData.message ||
+                "GitHub update failed."
+            );
+
+        }
+
+
+        document.getElementById("status").innerText =
+            "✅ Changes saved successfully! GitHub Pages will update shortly.";
+
+        alert(
+            "✅ SUCCESS!\n\nYour NFC card information has been updated."
+        );
+
+
+        // CLEAR TOKEN FROM FIELD
+        document.getElementById("token").value = "";
+
+
+    }
+
+    catch (error) {
+
+        document.getElementById("status").innerText =
+            "❌ Error: " + error.message;
+
+        alert(
+            "❌ SAVE FAILED\n\n" +
+            error.message
+        );
+
+    }
 
 }
 
