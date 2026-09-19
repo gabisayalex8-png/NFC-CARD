@@ -92,31 +92,31 @@ h1 {
         PROFILE
     </div>
 
-    <h1>NFC CARD</h1>
+    <h1 id="name">NFC CARD</h1>
 
-    <p class="subtitle">
+    <p class="subtitle" id="subtitle">
         Connect with me
     </p>
 
     <div class="buttons">
 
-        <a class="button" href="#" target="_blank">
+        <a class="button" id="facebook" href="#" target="_blank">
             Facebook
         </a>
 
-        <a class="button" href="#" target="_blank">
+        <a class="button" id="instagram" href="#" target="_blank">
             Instagram
         </a>
 
-        <a class="button" href="#" target="_blank">
+        <a class="button" id="tiktok" href="#" target="_blank">
             TikTok
         </a>
 
-        <a class="button" href="#" target="_blank">
+        <a class="button" id="messenger" href="#" target="_blank">
             Messenger
         </a>
 
-        <a class="button" href="tel:+630000000000">
+        <a class="button" id="phone" href="#">
             Contact Me
         </a>
 
@@ -127,6 +127,44 @@ h1 {
     </div>
 
 </div>
+
+<script>
+fetch("data.json")
+.then(response => response.json())
+.then(data => {
+
+    document.getElementById("name").textContent =
+        data.name || "NFC CARD";
+
+    document.getElementById("subtitle").textContent =
+        data.subtitle || "Connect with me";
+
+    if (data.facebook) {
+        document.getElementById("facebook").href = data.facebook;
+    }
+
+    if (data.instagram) {
+        document.getElementById("instagram").href = data.instagram;
+    }
+
+    if (data.tiktok) {
+        document.getElementById("tiktok").href = data.tiktok;
+    }
+
+    if (data.messenger) {
+        document.getElementById("messenger").href = data.messenger;
+    }
+
+    if (data.phone) {
+        document.getElementById("phone").href =
+            "tel:" + data.phone;
+    }
+
+})
+.catch(error => {
+    console.log("Data loading error:", error);
+});
+</script>
 
 </body>
 </html>
